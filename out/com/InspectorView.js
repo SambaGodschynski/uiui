@@ -12,13 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
 const fs = require("fs");
 const AWebView_1 = require("./AWebView");
-const UpdateIfThisExtension = [
-    '.sheet',
-    '.template',
-    '.conductions'
-];
 const ViewTitle = "UiUi Inspector";
-const TitleUpdaterIntervalMillis = 500;
 const openedViews = [];
 function registerInspector(inspector) {
     openedViews.push(inspector);
@@ -31,6 +25,7 @@ class InspectorView extends AWebView_1.AWebView {
     constructor(context) {
         super(context);
         this.currentPanel = null;
+        this.document = null;
         this.onDidDocumentSaveDisposable = null;
         this.onViewReady = () => { };
         this.onViewInitialRendered = () => { };
@@ -44,12 +39,8 @@ class InspectorView extends AWebView_1.AWebView {
             this.onViewInitialRendered = resolve;
         });
         if (vscode.window.activeTextEditor) {
-            const currentDocumentPath = vscode.window.activeTextEditor.document.fileName;
             this.viewReady.then(() => __awaiter(this, void 0, void 0, function* () {
-                // this.currentPanel!.webview.postMessage({
-                // 	playerState: {newState: PlayerState[getPlayer().state]}
-                // });
-                // this.onViewInitialRendered();
+                this.sendSource();
             }));
         }
     }
@@ -64,6 +55,17 @@ class InspectorView extends AWebView_1.AWebView {
             //this.currentPanel.webview.postMessage(message);
         });
     }
+    sendSource() {
+        if (!this.document) {
+            return;
+        }
+        const source = this.document.getText();
+        const message = {
+            msg: "updateSouce",
+            source: source
+        };
+        this.currentPanel.webview.postMessage(message);
+    }
     onDocumentSaved(document) {
     }
     registerListener() {
@@ -75,8 +77,8 @@ class InspectorView extends AWebView_1.AWebView {
         }
     }
     onWebViewMessage(message) {
-        console.log(message);
         switch (message.command) {
+            case "uiuiview-ready": return this.onViewReady();
         }
     }
     onWebViewStateChanged(ev) {
@@ -85,24 +87,6 @@ class InspectorView extends AWebView_1.AWebView {
         unregisterInspector(this);
         super.onPanelDidDispose();
         this.removeListener();
-    }
-    static waitUntilInspectorAreAvailable() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let maxTries = 20;
-            yield new Promise((resolve, reject) => {
-                const check = () => {
-                    if (openedViews.length > 0) {
-                        resolve();
-                    }
-                    if (--maxTries <= 0) {
-                        reject();
-                    }
-                    setTimeout(check, 500);
-                };
-                check();
-            });
-            yield Promise.all(openedViews.map(x => x.viewInitialRendered));
-        });
     }
     createPanelImpl() {
         return new Promise((resolve, reject) => {

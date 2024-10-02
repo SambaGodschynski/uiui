@@ -7,14 +7,28 @@ export class DebuggerComponent extends BaseComponent {
     constructor(props) {
         super(props);
         this.state = {
+            json: null
         }
+        window.addEventListener('message', event => { // get vscode message
+            const message = event.data;
+            this.handleMessage(message);
+        });
     }
 
     componentDidMount() {
-        this.sendMessageToHost("debuggerview-ready");
+        this.sendMessageToHost("uiuiview-ready");
+    }
+
+    updateSourceFile(source) {
+        this.setState({json: source});
     }
 
     handleMessage(message) {
+        switch(message.msg) {
+            case 'updateSouce':
+            this.updateSourceFile(message.source);
+            break;
+        }
     }
  
     render() {
@@ -23,6 +37,7 @@ export class DebuggerComponent extends BaseComponent {
                 <h1>
                     UiUiUi
                 </h1>
+                {this.state.json}
             </div>
         );
     }

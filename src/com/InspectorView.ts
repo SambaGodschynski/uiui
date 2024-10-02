@@ -2,16 +2,8 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { AWebView } from './AWebView';
-import { WMCommandOpenDebugger } from '../extension';
-
-const UpdateIfThisExtension:string[] = [
-	'.sheet',
-	'.template',
-	'.conductions'
-];
 
 const ViewTitle = "UiUi Inspector";
-const TitleUpdaterIntervalMillis = 500;
 
 const openedViews:InspectorView[] = [];
 function registerInspector(inspector: InspectorView) {
@@ -22,24 +14,13 @@ function unregisterInspector(inspector: InspectorView) {
 	openedViews.splice(idx, 1);
 }
 
-interface EventSourceInfo {
-	documentPath: string,
-	documentSourceId: number,
-	eventId: number,
-	midiType: number,
-	pitchAlias: string,
-	sourcePositionBegin:number,
-	sourcePositionEnd:number,
-	trackId:number
-}
 
 export class InspectorView extends AWebView {
 	currentPanel: vscode.WebviewPanel|null = null;
 	get panel():  vscode.WebviewPanel|null {
 		return this.currentPanel;
 	}
-	onPlayerMessageBound: any;
-	onPlayerStateChangedBound: any;
+	public document:vscode.TextDocument|null = null;
 	onSourcesChangedBound: any;
 	onDidDocumentSaveDisposable: vscode.Disposable|null= null;
 	private onViewReady: ()=>void = ()=>{};
@@ -58,12 +39,8 @@ export class InspectorView extends AWebView {
 			this.onViewInitialRendered = resolve;
 		})
 		if (vscode.window.activeTextEditor) {
-			const currentDocumentPath = vscode.window.activeTextEditor.document.fileName;
 			this.viewReady.then(async () => {
-				// this.currentPanel!.webview.postMessage({
-				// 	playerState: {newState: PlayerState[getPlayer().state]}
-				// });
-				// this.onViewInitialRendered();
+				this.sendSource();
 			})
 		}
 	}
@@ -75,7 +52,17 @@ export class InspectorView extends AWebView {
 		//this.currentPanel.webview.postMessage(message);
 	}
 
-
+	sendSource() {
+		if (!this.document) {
+			return;
+		}
+		const source = this.document.getText();
+		const message = {
+			msg: "updateSouce",
+			source: source
+		};
+		this.currentPanel!.webview.postMessage(message);
+	}
 
 
 	onDocumentSaved(document: vscode.TextDocument) {
@@ -91,9 +78,8 @@ export class InspectorView extends AWebView {
 		}
 	}
 	onWebViewMessage(message: any) {
-		console.log(message);
 		switch(message.command) {
-			
+			case "uiuiview-ready": return this.onViewReady();
 		}
 	}
 
@@ -104,23 +90,6 @@ export class InspectorView extends AWebView {
 		unregisterInspector(this);
 		super.onPanelDidDispose();
 		this.removeListener();
-	}
-
-	private static async waitUntilInspectorAreAvailable(): Promise<void> {
-		let maxTries = 20;
-		await new Promise<void>((resolve, reject) => {
-			const check = () => {
-				if (openedViews.length > 0) {
-					resolve();
-				}
-				if (--maxTries <= 0) {
-					reject();
-				}
-				setTimeout(check, 500);
-			};
-			check();
-		});
-		await Promise.all(openedViews.map(x => x.viewInitialRendered));
 	}
 
     protected createPanelImpl(): Promise<vscode.WebviewPanel> {

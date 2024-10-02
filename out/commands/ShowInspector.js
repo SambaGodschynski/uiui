@@ -11,10 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const ACommand_1 = require("./ACommand");
 const InspectorView_1 = require("../com/InspectorView");
+const vscode = require("vscode");
 class ShowInspector extends ACommand_1.ACommand {
     execute() {
         return __awaiter(this, void 0, void 0, function* () {
             const view = new InspectorView_1.InspectorView(this.context);
+            view.document = vscode.window.activeTextEditor.document;
             yield view.createPanel();
         });
     }
