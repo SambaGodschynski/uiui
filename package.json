@@ -1,0 +1,99 @@
+{
+    "name": "werckmeister",
+    "publisher": "JohannesUnger",
+    "displayName": "Werckmeister",
+    "description": "Werckmeister for VS Code",
+    "icon": "resources/Logo.png",
+    "repository": "https://github.com/werckme/werckmeister-codext",
+    "version": "1.0.60",
+    "engines": {
+        "vscode": "^1.38.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:extension.werckmeister.inspector"
+    ],
+    "main": "./dist/extension.js",
+    "contributes": {
+        "views": {
+        },
+        "viewsWelcome": [
+        ],
+        "commands": [
+            {
+                "command": "extension.werckmeister.inspector",
+                "title": "UiUi: Open Panel",
+                "icon": {
+                    "light": "./resources/werckmeister_light.svg",
+                    "dark": "./resources/werckmeister_dark.svg"
+                }
+            }
+        ],
+        "menus": {
+            "editor/title": [
+                {
+                    "when": "resourceFilename =~ /.*uiui\\.json$/",
+                    "command": "extension.werckmeister.inspector",
+                    "group": "navigation"
+                }
+            ],
+            "editor/context": [
+            ]
+        },
+        "languages": [
+        ],
+        "grammars": [
+        ],
+        "configuration": {
+        }
+    },
+    "scripts": {
+        "compile": "tsc -p ./ && npm run build-webviewapp",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile",
+        "test": "node ./out/test/runTest.js",
+        "build-webviewapp": "webpack --config webViewApp.webpack.config.js",
+        "webview-dev": "webpack --config webViewApp.webpack.config.js --watch",
+        "vscode:prepublish": "webpack --mode production",
+        "webpack": "webpack --mode development",
+        "webpack-dev": "webpack --mode development --watch",
+        "test-compile": "tsc -p ./",
+        "publish": "vsce package && vsce publish",
+        "package": "npm run build-webviewapp && vsce package"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.6.3",
+        "@babel/preset-env": "^7.6.3",
+        "@babel/preset-react": "^7.6.3",
+        "@types/glob": "^7.1.1",
+        "@types/mocha": "^5.2.6",
+        "@types/node": "^10.12.21",
+        "@types/vscode": "^1.38.0",
+        "babel-loader": "^8.0.6",
+        "glob": "^7.1.4",
+        "mocha": "^10.1.0",
+        "regenerator-runtime": "^0.13.7",
+        "ts-loader": "^6.2.2",
+        "tslint": "^5.12.1",
+        "typescript": "^3.3.1",
+        "vsce": "^2.6.7",
+        "vscode-test": "^1.2.0",
+        "webpack": "^5.69.1",
+        "webpack-cli": "^4.9.2"
+    },
+    "dependencies": {
+        "@types/lodash": "^4.14.144",
+        "@werckmeister/language-features": "1.0.0-73",
+        "@werckmeister/midi-debugger": "1.0.0-40",
+        "ace-builds": "^1.4.6",
+        "antd": "^4.18.7",
+        "lodash": "^4.17.21",
+        "react": "^16.10.2",
+        "react-dom": "^16.10.2",
+        "taskkill": "^3.0.0",
+        "udp-free-port": "^1.0.0",
+        "werckmeister-ace-build": "^1.4.6"
+    }
+}
