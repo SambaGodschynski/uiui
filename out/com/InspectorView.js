@@ -17,7 +17,7 @@ const UpdateIfThisExtension = [
     '.template',
     '.conductions'
 ];
-const ViewTitle = "Werckmeister Inspector";
+const ViewTitle = "UiUi Inspector";
 const TitleUpdaterIntervalMillis = 500;
 const openedViews = [];
 function registerInspector(inspector) {
@@ -106,7 +106,7 @@ class InspectorView extends AWebView_1.AWebView {
     }
     createPanelImpl() {
         return new Promise((resolve, reject) => {
-            this.currentPanel = vscode.window.createWebviewPanel('werckmeister.Inspector', // Identifies the type of the webview. Used internally
+            this.currentPanel = vscode.window.createWebviewPanel('uiui.Inspector', // Identifies the type of the webview. Used internally
             ViewTitle, // Title of the panel displayed to the user
             vscode.ViewColumn.Beside, // Editor column to show the new webview panel in.
             {

@@ -1,10 +1,10 @@
 {
-    "name": "werckmeister",
+    "name": "uiui",
     "publisher": "JohannesUnger",
-    "displayName": "Werckmeister",
-    "description": "Werckmeister for VS Code",
+    "displayName": "UiUi",
+    "description": "UiUi for VS Code",
     "icon": "resources/Logo.png",
-    "repository": "https://github.com/werckme/werckmeister-codext",
+    "repository": "https://github.com/werckme/uiui-codext",
     "version": "1.0.60",
     "engines": {
         "vscode": "^1.38.0"
@@ -13,17 +13,15 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.werckmeister.inspector"
+        "onCommand:extension.uiui.inspector"
     ],
     "main": "./dist/extension.js",
     "contributes": {
-        "views": {
-        },
-        "viewsWelcome": [
-        ],
+        "views": {},
+        "viewsWelcome": [],
         "commands": [
             {
-                "command": "extension.werckmeister.inspector",
+                "command": "extension.uiui.inspector",
                 "title": "UiUi: Open Panel",
                 "icon": {
                     "light": "./resources/werckmeister_light.svg",
@@ -35,19 +33,15 @@
             "editor/title": [
                 {
                     "when": "resourceFilename =~ /.*uiui\\.json$/",
-                    "command": "extension.werckmeister.inspector",
+                    "command": "extension.uiui.inspector",
                     "group": "navigation"
                 }
             ],
-            "editor/context": [
-            ]
+            "editor/context": []
         },
-        "languages": [
-        ],
-        "grammars": [
-        ],
-        "configuration": {
-        }
+        "languages": [],
+        "grammars": [],
+        "configuration": {}
     },
     "scripts": {
         "compile": "tsc -p ./ && npm run build-webviewapp",
@@ -85,15 +79,10 @@
     },
     "dependencies": {
         "@types/lodash": "^4.14.144",
-        "@werckmeister/language-features": "1.0.0-73",
-        "@werckmeister/midi-debugger": "1.0.0-40",
-        "ace-builds": "^1.4.6",
         "antd": "^4.18.7",
         "lodash": "^4.17.21",
         "react": "^16.10.2",
         "react-dom": "^16.10.2",
-        "taskkill": "^3.0.0",
-        "udp-free-port": "^1.0.0",
-        "werckmeister-ace-build": "^1.4.6"
+        "taskkill": "^3.0.0"
     }
 }

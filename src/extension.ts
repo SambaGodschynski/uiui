@@ -9,9 +9,8 @@ function excuteCommand(type: (new (context: vscode.ExtensionContext) => ACommand
 	let cmd = new type(context);
 	cmd.execute(args);
 }
-const _ns = "extension.werckmeister";
+const _ns = "extension.uiui";
 export const WMCommandOpenDebugger = `${_ns}.inspector`;
-let diagnosticCollection: vscode.DiagnosticCollection;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed

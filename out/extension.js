@@ -9,9 +9,8 @@ function excuteCommand(type, context, ...args) {
     let cmd = new type(context);
     cmd.execute(args);
 }
-const _ns = "extension.werckmeister";
+const _ns = "extension.uiui";
 exports.WMCommandOpenDebugger = `${_ns}.inspector`;
-let diagnosticCollection;
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
