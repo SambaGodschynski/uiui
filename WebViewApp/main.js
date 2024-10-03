@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
-import { DebuggerComponent } from './components/debugger/debugger.component';
+import { DebuggerComponent } from './components/views/uiui.component';
 
 
 const DebuggerId = 'debugger-main-component';

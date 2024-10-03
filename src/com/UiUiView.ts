@@ -5,17 +5,17 @@ import { AWebView } from './AWebView';
 
 const ViewTitle = "UiUi Inspector";
 
-const openedViews:InspectorView[] = [];
-function registerInspector(inspector: InspectorView) {
+const openedViews:UiUiView[] = [];
+function registerInspector(inspector: UiUiView) {
 	openedViews.push(inspector);
 }
-function unregisterInspector(inspector: InspectorView) {
+function unregisterInspector(inspector: UiUiView) {
 	const idx = openedViews.indexOf(inspector);
 	openedViews.splice(idx, 1);
 }
 
 
-export class InspectorView extends AWebView {
+export class UiUiView extends AWebView {
 	currentPanel: vscode.WebviewPanel|null = null;
 	get panel():  vscode.WebviewPanel|null {
 		return this.currentPanel;

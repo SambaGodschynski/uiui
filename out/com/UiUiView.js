@@ -112,4 +112,4 @@ class UiUiView extends AWebView_1.AWebView {
     }
 }
 exports.UiUiView = UiUiView;
-//# sourceMappingURL=InspectorView.js.map
+//# sourceMappingURL=UiUiView.js.map
