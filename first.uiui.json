@@ -1,10 +1,11 @@
 {
     "children": [
         {
-            "type": "panel",
+            "title": "my pannel",
             "children": [
                 {
-                    "type": "slider"
+                    "title": "my slidable value",
+                    "ctrl": "slider"
                 }
             ]
         }

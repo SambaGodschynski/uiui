@@ -1,13 +1,14 @@
 import React from "react";
 import * as _ from 'lodash';
 import { BaseComponent } from "../shared/base/base.component";
+import { UiUiElement } from "./uielements/element";
 
 
 export class DebuggerComponent extends BaseComponent {
     constructor(props) {
         super(props);
         this.state = {
-            json: null
+            root: {}
         }
         window.addEventListener('message', event => { // get vscode message
             const message = event.data;
@@ -20,7 +21,8 @@ export class DebuggerComponent extends BaseComponent {
     }
 
     updateSourceFile(source) {
-        this.setState({json: source});
+        const json = JSON.parse(source);
+        this.setState({root: json});
     }
 
     handleMessage(message) {
@@ -37,7 +39,7 @@ export class DebuggerComponent extends BaseComponent {
                 <h1>
                     UiUiUi
                 </h1>
-                {this.state.json}
+                {<UiUiElement uiui={this.state.root} depth={1}></UiUiElement>}
             </div>
         );
     }
