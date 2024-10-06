@@ -2,7 +2,8 @@ import { writeFileSync } from "fs";
 import { IUiUiElementDef, IUiUiRootDef } from "./UiUiDefs";
 import * as _ from 'lodash';
 
-const WriteDelayMillis = 1000;
+const WriteDelayMillis = 500;
+const VariableEscapeChar = '#';
 
 export type RendererValueType = string | number | boolean;
 export class Renderer {
@@ -16,6 +17,9 @@ export class Renderer {
         this.findRenderExpressions(this.uiuiRoot);
         if (!this.uiuiRoot.outfile) {
             throw new Error(`missing "outfile"`);
+        }
+        if (!this.uiuiRoot.comment) {
+            throw new Error(`missing comment attribute`);
         }
     }
     findRenderExpressions(def: IUiUiElementDef) {
@@ -39,11 +43,19 @@ export class Renderer {
     writeDebounced() {
         const lines: string[] = [];
         for (let expr of this.renderExpessions) {
+            const processedIds = [];
             for (const id in this.values) {
                 const value = this.values[id];
-                expr = expr.replace(new RegExp(`$${id}`, "g"), `${value}`);
-                lines.push(expr);
+                const regex = new RegExp(`${VariableEscapeChar}${id}`, "g");
+                const match = expr.match(regex);
+                if (!match) {
+                    continue;
+                }
+                processedIds.push(id);
+                expr = expr.replace(regex, `${value}`);
             }
+            lines.push(`${this.uiuiRoot.comment} uiui ${VariableEscapeChar}${processedIds.join(', ')}`);
+            lines.push(`${expr}`);
         }
         writeFileSync(this.uiuiRoot.outfile, lines.join('\n'), { flag: 'w' })
         

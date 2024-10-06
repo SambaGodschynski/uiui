@@ -9,10 +9,11 @@
                     "id": "value1",
                     "title": "Value 1",
                     "ctrl": "slider",
-                    "render": "v1 = $value1"
+                    "render": "v1 = #value1"
                 },
                 {
                     "title": "Parameter Group",
+                    "render": "v2 = #value2\nv3 = #value3",
                     "children": [
                         {
                             "id": "value2",

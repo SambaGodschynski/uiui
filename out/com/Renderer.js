@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const _ = require("lodash");
-const WriteDelayMillis = 1000;
+const WriteDelayMillis = 500;
+const VariableEscapeChar = '#';
 class Renderer {
     constructor(jsonText) {
         this.renderExpessions = [];
@@ -12,6 +13,9 @@ class Renderer {
         this.findRenderExpressions(this.uiuiRoot);
         if (!this.uiuiRoot.outfile) {
             throw new Error(`missing "outfile"`);
+        }
+        if (!this.uiuiRoot.comment) {
+            throw new Error(`missing comment attribute`);
         }
     }
     findRenderExpressions(def) {
@@ -35,11 +39,19 @@ class Renderer {
     writeDebounced() {
         const lines = [];
         for (let expr of this.renderExpessions) {
+            const processedIds = [];
             for (const id in this.values) {
                 const value = this.values[id];
-                expr = expr.replace(new RegExp(`$${id}`, "g"), `${value}`);
-                lines.push(expr);
+                const regex = new RegExp(`${VariableEscapeChar}${id}`, "g");
+                const match = expr.match(regex);
+                if (!match) {
+                    continue;
+                }
+                processedIds.push(id);
+                expr = expr.replace(regex, `${value}`);
             }
+            lines.push(`${this.uiuiRoot.comment} uiui ${VariableEscapeChar}${processedIds.join(', ')}`);
+            lines.push(`${expr}`);
         }
         fs_1.writeFileSync(this.uiuiRoot.outfile, lines.join('\n'), { flag: 'w' });
     }
