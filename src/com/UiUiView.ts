@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { AWebView } from './AWebView';
+import { Renderer } from './Renderer';
 
 const ViewTitle = "UiUi Inspector";
 
@@ -27,6 +28,7 @@ export class UiUiView extends AWebView {
 	private onViewInitialRendered: ()=>void = ()=>{};
 	viewReady: Promise<void>;
 	viewInitialRendered: Promise<void>;
+	renderer: Renderer|null = null;
 	titleUpdater: NodeJS.Timeout|null = null;
 	constructor(context: vscode.ExtensionContext) {
 		super(context);
@@ -61,6 +63,7 @@ export class UiUiView extends AWebView {
 			msg: "updateSouce",
 			source: source
 		};
+		this.renderer = new Renderer(source);
 		this.currentPanel!.webview.postMessage(message);
 	}
 
@@ -72,14 +75,23 @@ export class UiUiView extends AWebView {
 		this.onDidDocumentSaveDisposable = vscode.workspace.onDidSaveTextDocument(this.onDocumentSaved.bind(this));
 	}
 
+	onUiValueChanged(msg: {id: string, value: number}) {
+		if(!this.renderer) {
+			return;
+		}
+		this.renderer.valueChanged(msg.id, msg.value);
+	}
+
 	removeListener() {
 		if (this.onDidDocumentSaveDisposable) {
 			this.onDidDocumentSaveDisposable.dispose();
 		}
 	}
+
 	onWebViewMessage(message: any) {
 		switch(message.command) {
 			case "uiuiview-ready": return this.onViewReady();
+			case "onvalue-changed": return this.onUiValueChanged(message);
 		}
 	}
 

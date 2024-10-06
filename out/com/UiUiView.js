@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
 const fs = require("fs");
 const AWebView_1 = require("./AWebView");
+const Renderer_1 = require("./Renderer");
 const ViewTitle = "UiUi Inspector";
 const openedViews = [];
 function registerInspector(inspector) {
@@ -29,6 +30,7 @@ class UiUiView extends AWebView_1.AWebView {
         this.onDidDocumentSaveDisposable = null;
         this.onViewReady = () => { };
         this.onViewInitialRendered = () => { };
+        this.renderer = null;
         this.titleUpdater = null;
         registerInspector(this);
         this.onSourcesChangedBound = this.onSourcesChanged.bind(this);
@@ -64,12 +66,19 @@ class UiUiView extends AWebView_1.AWebView {
             msg: "updateSouce",
             source: source
         };
+        this.renderer = new Renderer_1.Renderer(source);
         this.currentPanel.webview.postMessage(message);
     }
     onDocumentSaved(document) {
     }
     registerListener() {
         this.onDidDocumentSaveDisposable = vscode.workspace.onDidSaveTextDocument(this.onDocumentSaved.bind(this));
+    }
+    onUiValueChanged(msg) {
+        if (!this.renderer) {
+            return;
+        }
+        this.renderer.valueChanged(msg.id, msg.value);
     }
     removeListener() {
         if (this.onDidDocumentSaveDisposable) {
@@ -79,6 +88,7 @@ class UiUiView extends AWebView_1.AWebView {
     onWebViewMessage(message) {
         switch (message.command) {
             case "uiuiview-ready": return this.onViewReady();
+            case "onvalue-changed": return this.onUiValueChanged(message);
         }
     }
     onWebViewStateChanged(ev) {

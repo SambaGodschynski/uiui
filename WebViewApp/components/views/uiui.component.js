@@ -32,6 +32,10 @@ export class DebuggerComponent extends BaseComponent {
             break;
         }
     }
+
+    onValueChange(id, value) {
+        this.sendMessageToHost("onvalue-changed", {id, value});
+    }
  
     render() {
         return (
@@ -39,7 +43,7 @@ export class DebuggerComponent extends BaseComponent {
                 <h1>
                     UiUiUi
                 </h1>
-                {<UiUiElement uiui={this.state.root} depth={1}></UiUiElement>}
+                {<UiUiElement onValueChange={this.onValueChange.bind(this)} uiui={this.state.root} depth={1}></UiUiElement>}
             </div>
         );
     }

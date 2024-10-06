@@ -1,11 +1,30 @@
 {
+    "comment": "--",
+    "outfile": "/home/samba/workspace/uiui/first.uiui.rendered",
     "children": [
         {
-            "title": "my pannel",
+            "direction": "column",
             "children": [
                 {
-                    "title": "my slidable value",
-                    "ctrl": "slider"
+                    "id": "value1",
+                    "title": "Value 1",
+                    "ctrl": "slider",
+                    "render": "v1 = $value1"
+                },
+                {
+                    "title": "Parameter Group",
+                    "children": [
+                        {
+                            "id": "value2",
+                            "title": "Value 1",
+                            "ctrl": "slider"
+                        },
+                        {
+                            "id": "value3",
+                            "title": "Value 2",
+                            "ctrl": "slider"
+                        }
+                    ]
                 }
             ]
         }

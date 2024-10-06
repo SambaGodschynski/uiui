@@ -15,6 +15,7 @@ export const CtrlTypes = {
 export class UiUiElement extends React.Component {
     constructor(props) {
         super(props);
+        this.onValueChange = props.onValueChange || (() => {});
     }
 
     renderTitle(title) {
@@ -37,8 +38,15 @@ export class UiUiElement extends React.Component {
             return <></>;
         }
         switch(ctrl) {
-            case CtrlTypes.slider: return <UiUiSlider uiui={this.props.uiui}></UiUiSlider>;
+            case CtrlTypes.slider: return <UiUiSlider uiui={this.props.uiui} onValueChange={this.onValueChange}></UiUiSlider>;
         }
+    }
+
+    getStyle(el) {
+        return {
+            display: "flex",
+            flexDirection: el.direction || "row"
+        };
     }
 
     render() {
@@ -48,14 +56,17 @@ export class UiUiElement extends React.Component {
         if(ctrl) {
             classes.push(`ctrl-${ctrl}`)
         }
+        const style = this.getStyle(el);
         return <div className={classes.join(' ')}>
             {el.title ? this.renderTitle(el.title) : <></> }
             {this.renderCtrl()}
-            { el.children ? el.children.map( x => 
-                <UiUiElement key={nextKey()} uiui={x} depth={this.props.depth + 1}>
-                </UiUiElement>) 
-                : <></> 
-            }
+            <div style={style}>
+                { el.children ? el.children.map( x => 
+                    <UiUiElement onValueChange={this.onValueChange} key={nextKey()} uiui={x} depth={this.props.depth + 1}>
+                    </UiUiElement>) 
+                    : <></> 
+                }
+            </div>
         </div>
     }
 }
