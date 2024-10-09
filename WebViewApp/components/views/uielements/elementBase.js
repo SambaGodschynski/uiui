@@ -5,10 +5,7 @@ export class UiUiBase extends React.Component {
         super(props);
         
     }
-    componentDidMount() {
-        this.onValueChange(this.getDefaultValue())
-    }
     onValueChange(newValue) {}
-    getDefaultValue() { return 0; }
+    getInitValue() { return 0; }
 
 }

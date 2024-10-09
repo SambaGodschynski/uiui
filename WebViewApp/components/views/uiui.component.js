@@ -8,7 +8,8 @@ export class DebuggerComponent extends BaseComponent {
     constructor(props) {
         super(props);
         this.state = {
-            root: {}
+            root: {},
+            initValues: {}
         }
         window.addEventListener('message', event => { // get vscode message
             const message = event.data;
@@ -25,10 +26,15 @@ export class DebuggerComponent extends BaseComponent {
         this.setState({root: json});
     }
 
+    updateInitValues(initValues) {
+        this.setState({initValues});
+    }
+
     handleMessage(message) {
         switch(message.msg) {
             case 'updateSouce':
             this.updateSourceFile(message.source);
+            this.updateInitValues(message.initValues);
             break;
         }
     }
@@ -40,10 +46,11 @@ export class DebuggerComponent extends BaseComponent {
     render() {
         return (
             <div>
-                <h1>
-                    UiUiUi
-                </h1>
-                {<UiUiElement onValueChange={this.onValueChange.bind(this)} uiui={this.state.root} depth={1}></UiUiElement>}
+                {<UiUiElement onValueChange={this.onValueChange.bind(this)} 
+                    uiui={this.state.root} 
+                    initValues={this.state.initValues} 
+                    depth={1}>
+                </UiUiElement>}
             </div>
         );
     }

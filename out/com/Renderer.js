@@ -17,6 +17,25 @@ class Renderer {
         if (!this.uiuiRoot.comment) {
             throw new Error(`missing comment attribute`);
         }
+        this.readValues();
+    }
+    readValues() {
+        if (!fs_1.existsSync(this.uiuiRoot.outfile)) {
+            return;
+        }
+        const re = new RegExp(`\\s*${this.uiuiRoot.comment}\\s*uiui\\s*([A-Za-z0-9+/=]+)\\s*$`, "m");
+        const text = fs_1.readFileSync(this.uiuiRoot.outfile).toString();
+        if (!text) {
+            console.error("no file content");
+            return;
+        }
+        const match = text.match(re);
+        if (!match || !match[1]) {
+            console.error("no match");
+            return;
+        }
+        const jsonString = Buffer.from(match[1], 'base64').toString('utf-8');
+        this.values = JSON.parse(jsonString);
     }
     findRenderExpressions(def) {
         if (def.render) {
@@ -36,10 +55,15 @@ class Renderer {
         this.values[id] = value;
         this.write();
     }
+    valueDump() {
+        const valuesJson = JSON.stringify(this.values);
+        const base64Encoded = Buffer.from(valuesJson).toString('base64');
+        return `${this.uiuiRoot.comment} uiui ${base64Encoded}`;
+    }
     writeDebounced() {
         const lines = [];
         for (let expr of this.renderExpessions) {
-            const processedIds = [];
+            const processedValues = [];
             for (const id in this.values) {
                 const value = this.values[id];
                 const regex = new RegExp(`${VariableEscapeChar}${id}`, "g");
@@ -47,12 +71,12 @@ class Renderer {
                 if (!match) {
                     continue;
                 }
-                processedIds.push(id);
+                processedValues.push({ id, value });
                 expr = expr.replace(regex, `${value}`);
             }
-            lines.push(`${this.uiuiRoot.comment} uiui ${VariableEscapeChar}${processedIds.join(', ')}`);
             lines.push(`${expr}`);
         }
+        lines.push(this.valueDump());
         fs_1.writeFileSync(this.uiuiRoot.outfile, lines.join('\n'), { flag: 'w' });
     }
 }

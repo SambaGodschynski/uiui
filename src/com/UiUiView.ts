@@ -59,11 +59,12 @@ export class UiUiView extends AWebView {
 			return;
 		}
 		const source = this.document.getText();
+		this.renderer = new Renderer(source);
 		const message = {
 			msg: "updateSouce",
-			source: source
+			source: source,
+			initValues: this.renderer.values
 		};
-		this.renderer = new Renderer(source);
 		this.currentPanel!.webview.postMessage(message);
 	}
 

@@ -1,5 +1,4 @@
--- uiui #value1
-v1 = 48
--- uiui #value2, value3
-v2 = 0
-v3 = 0
+v1 = 1
+v2 = 21
+v3 = 33
+-- uiui eyJ2YWx1ZTEiOjEsInZhbHVlMiI6MjEsInZhbHVlMyI6MzN9

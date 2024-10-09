@@ -34,11 +34,12 @@ export class UiUiElement extends React.Component {
     renderCtrl() {
         const el = this.props.uiui;
         const ctrl = el.ctrl;
+        const initValue = this.props.initValues[el.id]; 
         if (!ctrl) {
             return <></>;
         }
         switch(ctrl) {
-            case CtrlTypes.slider: return <UiUiSlider uiui={this.props.uiui} onValueChange={this.onValueChange}></UiUiSlider>;
+            case CtrlTypes.slider: return <UiUiSlider uiui={this.props.uiui} initValue={initValue} onValueChange={this.onValueChange}></UiUiSlider>;
         }
     }
 
@@ -62,7 +63,11 @@ export class UiUiElement extends React.Component {
             {this.renderCtrl()}
             <div style={style}>
                 { el.children ? el.children.map( x => 
-                    <UiUiElement onValueChange={this.onValueChange} key={nextKey()} uiui={x} depth={this.props.depth + 1}>
+                    <UiUiElement onValueChange={this.onValueChange} 
+                        key={nextKey()} 
+                        uiui={x} 
+                        initValues={this.props.initValues}
+                        depth={this.props.depth + 1}>
                     </UiUiElement>) 
                     : <></> 
                 }

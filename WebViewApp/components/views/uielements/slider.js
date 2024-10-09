@@ -6,9 +6,11 @@ export class UiUiSlider extends UiUiBase {
         super(props);
         this.id = props.uiui.id;
         this.state = {
-            value: props.defaultValue || 0
+            value: this.getInitValue()
         }
     }
+
+    getInitValue() { return this.props.initValue || this.props.defaultValue || 0; }
 
     onSliderValueChange(event) {
         const value = Number.parseFloat(event.target.value);
