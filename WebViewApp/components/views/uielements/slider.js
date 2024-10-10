@@ -22,7 +22,7 @@ export class UiUiSlider extends UiUiBase {
     }
 
     onValueChange(value) {
-        this.setState({value});
+        this.setState({ value });
         if (this.props.onValueChange) {
             value = this.postProcess(value);
             this.props.onValueChange(this.id, value);
@@ -30,19 +30,28 @@ export class UiUiSlider extends UiUiBase {
     }
 
     render() {
-        return <>
-             <input 
-                onChange={this.onSliderValueChange.bind(this)} 
-                value={this.state.value} 
-                style={{
-                    // transform: "rotate(-90deg)",
-                    // transformOrigin: "50% 50%"
-                }} 
-                type="range" 
-                min={this.minValue} 
+        return <div style={{ padding: "0 5px" }}>
+            <input
+                onChange={this.onSliderValueChange.bind(this)}
+                value={this.state.value}
+                type="range"
+                min={this.minValue}
                 max={this.maxValue}
                 step={this.step}
-             />
-        </>
+            />
+            <input
+                onChange={this.onSliderValueChange.bind(this)}
+                value={this.state.value}
+                type="number"
+                min={this.minValue}
+                max={this.maxValue}
+                step={this.step}
+                style={{
+                    width: "3ch",
+                    verticalAlign: "text-bottom"
+                }}
+            >
+            </input>
+        </div>
     }
 }
