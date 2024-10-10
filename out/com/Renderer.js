@@ -2,10 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const _ = require("lodash");
+const path = require("path");
 const WriteDelayMillis = 500;
 const VariableEscapeChar = '#';
 class Renderer {
-    constructor(jsonText) {
+    constructor(jsonText, basePath) {
+        this.basePath = basePath;
         this.renderExpessions = [];
         this.values = {};
         this.uiuiRoot = JSON.parse(jsonText);
@@ -19,12 +21,15 @@ class Renderer {
         }
         this.readValues();
     }
+    get outPath() {
+        return path.join(this.basePath, this.uiuiRoot.outfile);
+    }
     readValues() {
-        if (!fs_1.existsSync(this.uiuiRoot.outfile)) {
+        if (!fs_1.existsSync(this.outPath)) {
             return;
         }
         const re = new RegExp(`\\s*${this.uiuiRoot.comment}\\s*uiui\\s*([A-Za-z0-9+/=]+)\\s*$`, "m");
-        const text = fs_1.readFileSync(this.uiuiRoot.outfile).toString();
+        const text = fs_1.readFileSync(this.outPath).toString();
         if (!text) {
             console.error("no file content");
             return;
@@ -77,7 +82,7 @@ class Renderer {
             lines.push(`${expr}`);
         }
         lines.push(this.valueDump());
-        fs_1.writeFileSync(this.uiuiRoot.outfile, lines.join('\n'), { flag: 'w' });
+        fs_1.writeFileSync(this.outPath, lines.join('\n'), { flag: 'w' });
     }
 }
 exports.Renderer = Renderer;

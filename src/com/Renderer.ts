@@ -1,6 +1,7 @@
 import { writeFileSync, readFileSync, existsSync } from "fs";
 import { IUiUiElementDef, IUiUiRootDef } from "./UiUiDefs";
 import * as _ from 'lodash';
+import * as path from 'path';
 
 const WriteDelayMillis = 500;
 const VariableEscapeChar = '#';
@@ -11,7 +12,7 @@ export class Renderer {
     private renderExpessions: string[] = [];
     public values: { [key: string]: RendererValueType } = {};
     private write: () => void;
-    constructor(jsonText: string) {
+    constructor(jsonText: string, private basePath: string) {
         this.uiuiRoot = JSON.parse(jsonText);
         this.write = _.debounce(this.writeDebounced.bind(this), WriteDelayMillis);
         this.findRenderExpressions(this.uiuiRoot);
@@ -23,12 +24,17 @@ export class Renderer {
         }
         this.readValues();
     }
+
+    get outPath(): string {
+        return path.join(this.basePath, this.uiuiRoot.outfile);
+    }
+
     readValues(): void {
-        if (!existsSync(this.uiuiRoot.outfile)) {
+        if (!existsSync(this.outPath)) {
             return;
         }
         const re = new RegExp(`\\s*${this.uiuiRoot.comment}\\s*uiui\\s*([A-Za-z0-9+/=]+)\\s*$`, "m");
-        const text = readFileSync(this.uiuiRoot.outfile).toString();
+        const text = readFileSync(this.outPath).toString();
         if (!text) {
             console.error("no file content");
             return;
@@ -83,6 +89,6 @@ export class Renderer {
             lines.push(`${expr}`);
         }
         lines.push(this.valueDump());
-        writeFileSync(this.uiuiRoot.outfile, lines.join('\n'), { flag: 'w' })
+        writeFileSync(this.outPath, lines.join('\n'), { flag: 'w' })
     }
 }

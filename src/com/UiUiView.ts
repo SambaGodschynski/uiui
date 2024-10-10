@@ -59,7 +59,8 @@ export class UiUiView extends AWebView {
 			return;
 		}
 		const source = this.document.getText();
-		this.renderer = new Renderer(source);
+		const basePath = path.dirname(this.document.uri.fsPath);
+		this.renderer = new Renderer(source, basePath);
 		const message = {
 			msg: "updateSouce",
 			source: source,

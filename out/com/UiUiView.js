@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
+const path = require("path");
 const fs = require("fs");
 const AWebView_1 = require("./AWebView");
 const Renderer_1 = require("./Renderer");
@@ -62,7 +63,8 @@ class UiUiView extends AWebView_1.AWebView {
             return;
         }
         const source = this.document.getText();
-        this.renderer = new Renderer_1.Renderer(source);
+        const basePath = path.dirname(this.document.uri.fsPath);
+        this.renderer = new Renderer_1.Renderer(source, basePath);
         const message = {
             msg: "updateSouce",
             source: source,
