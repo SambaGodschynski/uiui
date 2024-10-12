@@ -1,0 +1,44 @@
+{
+    "title": "My First UiUi Panel",
+    "comment": "--",
+    "outfile": "./first.uiui-using-template.rendered",
+    "template": "./first.uiui.template",
+    "render": "-- My Senf to the situation",
+    "placeholder": "$DYNAMIC_COMMENT",
+    "children": [
+        {
+            "direction": "column",
+            "children": [
+                {
+                    "id": "value1",
+                    "title": "Value 1",
+                    "ctrl": "slider",
+                    "render": "v1 = #value1",
+                    "placeholder": "$VALUES",
+                    "minValue": 0,
+                    "maxValue": 5,
+                    "step": 1,
+                    "defaultValue": 4,
+                    "postProcess": "value/2"
+                },
+                {
+                    "title": "Parameter Group",
+                    "render": "v2 = #value2\nv3 = #value3",
+                    "placeholder": "$VALUES",
+                    "children": [
+                        {
+                            "id": "value2",
+                            "title": "Value 1",
+                            "ctrl": "slider"
+                        },
+                        {
+                            "id": "value3",
+                            "title": "Value 2",
+                            "ctrl": "slider"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

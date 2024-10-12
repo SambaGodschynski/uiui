@@ -24,6 +24,12 @@ class Renderer {
     get outPath() {
         return path.join(this.basePath, this.uiuiRoot.outfile);
     }
+    get templatePath() {
+        if (!this.uiuiRoot.template) {
+            throw new Error(`missing template path`);
+        }
+        return path.join(this.basePath, this.uiuiRoot.template);
+    }
     readValues() {
         if (!fs_1.existsSync(this.outPath)) {
             return;
@@ -44,7 +50,12 @@ class Renderer {
     }
     findRenderExpressions(def) {
         if (def.render) {
-            this.renderExpessions.push(def.render);
+            const placeholder = def.placeholder;
+            const expr = def.render;
+            if (this.uiuiRoot.template && !placeholder) {
+                throw new Error(`missing "placeholder" for "${def.id || 'unkown id'}. If you use a template you need to define a placeholder for every render expression."`);
+            }
+            this.renderExpessions.push({ expr, placeholder });
         }
         if (!def.children) {
             return;
@@ -66,9 +77,23 @@ class Renderer {
         return `${this.uiuiRoot.comment} uiui ${base64Encoded}`;
     }
     writeDebounced() {
+        const placeholderMap = {};
         const lines = [];
-        for (let expr of this.renderExpessions) {
-            const processedValues = [];
+        const isRenderingTemplate = !!this.uiuiRoot.template;
+        let addExprLine = (expr, placeholder) => {
+            lines.push(`${expr}`);
+        };
+        if (isRenderingTemplate) {
+            addExprLine = (expr, placeholder) => {
+                if (!placeholder) {
+                    return;
+                }
+                const exprs = placeholderMap[placeholder] || [];
+                exprs.push(expr);
+                placeholderMap[placeholder] = exprs;
+            };
+        }
+        for (let { expr, placeholder } of this.renderExpessions) {
             for (const id in this.values) {
                 const value = this.values[id];
                 const regex = new RegExp(`${VariableEscapeChar}${id}`, "g");
@@ -76,13 +101,23 @@ class Renderer {
                 if (!match) {
                     continue;
                 }
-                processedValues.push({ id, value });
                 expr = expr.replace(regex, `${value}`);
             }
-            lines.push(`${expr}`);
+            addExprLine(expr, placeholder);
         }
-        lines.push(this.valueDump());
-        fs_1.writeFileSync(this.outPath, lines.join('\n'), { flag: 'w' });
+        if (!isRenderingTemplate) {
+            lines.push(this.valueDump());
+            fs_1.writeFileSync(this.outPath, lines.join('\n'), { flag: 'w' });
+            return;
+        }
+        let templateText = fs_1.readFileSync(this.templatePath).toString();
+        for (let placeholder in placeholderMap) {
+            const exprs = placeholderMap[placeholder];
+            placeholder = placeholder.replace(/([$<>\[\]^.])/g, '\\$1');
+            templateText = templateText.replace(new RegExp(placeholder, "g"), exprs.join('\n'));
+        }
+        templateText += `\n${this.valueDump()}\n`;
+        fs_1.writeFileSync(this.outPath, templateText, { flag: 'w' });
     }
 }
 exports.Renderer = Renderer;

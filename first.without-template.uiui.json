@@ -2,6 +2,7 @@
     "title": "My First UiUi Panel",
     "comment": "--",
     "outfile": "./first.uiui.rendered",
+    "render": "-- this is a render output of uiui\n----------------------------------",
     "children": [
         {
             "direction": "column",

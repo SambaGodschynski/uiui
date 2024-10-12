@@ -64,13 +64,23 @@ class UiUiView extends AWebView_1.AWebView {
         }
         const source = this.document.getText();
         const basePath = path.dirname(this.document.uri.fsPath);
-        this.renderer = new Renderer_1.Renderer(source, basePath);
-        const message = {
-            msg: "updateSouce",
-            source: source,
-            initValues: this.renderer.values
-        };
-        this.currentPanel.webview.postMessage(message);
+        try {
+            this.renderer = new Renderer_1.Renderer(source, basePath);
+            const message = {
+                msg: "updateSouce",
+                source: source,
+                initValues: this.renderer.values
+            };
+            this.currentPanel.webview.postMessage(message);
+        }
+        catch (ex) {
+            const error = ex;
+            if (error.message) {
+                vscode.window.showErrorMessage(error.message);
+                return;
+            }
+            vscode.window.showErrorMessage("uiui: unexpected error");
+        }
     }
     onDocumentSaved(document) {
     }
@@ -81,7 +91,17 @@ class UiUiView extends AWebView_1.AWebView {
         if (!this.renderer) {
             return;
         }
-        this.renderer.valueChanged(msg.id, msg.value);
+        try {
+            this.renderer.valueChanged(msg.id, msg.value);
+        }
+        catch (ex) {
+            const error = ex;
+            if (error.message) {
+                vscode.window.showErrorMessage(error.message);
+                return;
+            }
+            vscode.window.showErrorMessage("uiui: unexpected error");
+        }
     }
     removeListener() {
         if (this.onDidDocumentSaveDisposable) {

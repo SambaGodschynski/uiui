@@ -6,10 +6,12 @@ import * as path from 'path';
 const WriteDelayMillis = 500;
 const VariableEscapeChar = '#';
 
+type RenderExpression = {expr: string, placeholder?: string};
+
 export type RendererValueType = string | number | boolean;
 export class Renderer {
     private uiuiRoot: IUiUiRootDef;
-    private renderExpessions: string[] = [];
+    private renderExpessions: RenderExpression[] = [];
     public values: { [key: string]: RendererValueType } = {};
     private write: () => void;
     constructor(jsonText: string, private basePath: string) {
@@ -27,6 +29,13 @@ export class Renderer {
 
     get outPath(): string {
         return path.join(this.basePath, this.uiuiRoot.outfile);
+    }
+
+    get templatePath(): string {
+        if (!this.uiuiRoot.template) {
+            throw new Error(`missing template path`);
+        }
+        return path.join(this.basePath, this.uiuiRoot.template);
     }
 
     readValues(): void {
@@ -47,9 +56,15 @@ export class Renderer {
         const jsonString = Buffer.from(match[1], 'base64').toString('utf-8');
         this.values = JSON.parse(jsonString);
     }
+
     findRenderExpressions(def: IUiUiElementDef) {
         if (def.render) {
-            this.renderExpessions.push(def.render);
+            const placeholder = def.placeholder;
+            const expr = def.render;
+            if (this.uiuiRoot.template && !placeholder) {
+                throw new Error(`missing "placeholder" for "${def.id || 'unkown id'}. If you use a template you need to define a placeholder for every render expression."`);
+            }
+            this.renderExpessions.push({expr, placeholder});
         }
         if (!def.children) {
             return;
@@ -73,9 +88,23 @@ export class Renderer {
     }
 
     writeDebounced() {
-        const lines: string[] = [];
-        for (let expr of this.renderExpessions) {
-            const processedValues:{id: string, value: any}[] = [];
+        const placeholderMap:{[key: string]: string[]} = {};
+        const lines = [];
+        const isRenderingTemplate = !!this.uiuiRoot.template;
+        let addExprLine = (expr: string, placeholder?: string) => {
+            lines.push(`${expr}`);
+        };
+        if (isRenderingTemplate) {
+            addExprLine = (expr: string, placeholder?: string) => {
+                if (!placeholder) {
+                    return;
+                }
+                const exprs = placeholderMap[placeholder] || [];
+                exprs.push(expr);
+                placeholderMap[placeholder] = exprs;
+            };
+        }
+        for (let {expr, placeholder} of this.renderExpessions) {
             for (const id in this.values) {
                 const value = this.values[id];
                 const regex = new RegExp(`${VariableEscapeChar}${id}`, "g");
@@ -83,12 +112,22 @@ export class Renderer {
                 if (!match) {
                     continue;
                 }
-                processedValues.push({id, value});
                 expr = expr.replace(regex, `${value}`);
             }
-            lines.push(`${expr}`);
+            addExprLine(expr, placeholder);
         }
-        lines.push(this.valueDump());
-        writeFileSync(this.outPath, lines.join('\n'), { flag: 'w' })
+        if (!isRenderingTemplate) {
+            lines.push(this.valueDump());
+            writeFileSync(this.outPath, lines.join('\n'), { flag: 'w' });
+            return;
+        }
+        let templateText = readFileSync(this.templatePath).toString();
+        for(let placeholder in placeholderMap) {
+            const exprs = placeholderMap[placeholder];
+            placeholder = placeholder.replace(/([$<>\[\]^.])/g, '\\$1');
+            templateText = templateText.replace(new RegExp(placeholder, "g"), exprs.join('\n'));
+        }
+        templateText += `\n${this.valueDump()}\n`;
+        writeFileSync(this.outPath, templateText, { flag: 'w' });
     }
 }

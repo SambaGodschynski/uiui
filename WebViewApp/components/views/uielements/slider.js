@@ -14,7 +14,15 @@ export class UiUiSlider extends UiUiBase {
         }
     }
 
-    getInitValue() { return this.props.initValue || this.defaultValue || 0; }
+    getInitValue() { 
+        if (this.props.initValue) {
+            return this.props.initValue;
+        }
+        if (this.props.defaultValue) {
+            return this.props.defaultValue;
+        }
+        return 0;
+    }
 
     onSliderValueChange(event) {
         const value = Number.parseFloat(event.target.value);
@@ -47,8 +55,9 @@ export class UiUiSlider extends UiUiBase {
                 max={this.maxValue}
                 step={this.step}
                 style={{
-                    width: "3ch",
-                    verticalAlign: "text-bottom"
+                    width: "5ch",
+                    verticalAlign: "text-bottom",
+                    padding: "0"
                 }}
             >
             </input>
