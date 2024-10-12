@@ -24,8 +24,8 @@
                 "command": "extension.uiui.inspector",
                 "title": "UiUi: Open Panel",
                 "icon": {
-                    "light": "./resources/werckmeister_light.svg",
-                    "dark": "./resources/werckmeister_dark.svg"
+                    "light": "./resources/logo_light.svg",
+                    "dark": "./resources/logo_dark.svg"
                 }
             }
         ],

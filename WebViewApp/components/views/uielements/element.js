@@ -46,7 +46,15 @@ export class UiUiElement extends React.Component {
     getStyle(el) {
         return {
             display: "flex",
-            flexDirection: el.direction || "row"
+            flexDirection: el.direction || "row",
+            flexWrap: "wrap",
+            marginBottom: (() => {
+                switch (this.props.depth) {
+                    case 2: return "50px";
+                    case 3: return "5px";
+                    default: return undefined;
+                }
+            })()
         };
     }
 
