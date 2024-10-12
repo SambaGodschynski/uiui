@@ -41,7 +41,13 @@
         },
         "languages": [],
         "grammars": [],
-        "configuration": {}
+        "configuration": {},
+        "jsonValidation": [
+            {
+                "fileMatch": "*.uiui.json",
+                "url": "./uiui.schema.json"
+            }
+        ]
     },
     "scripts": {
         "compile": "tsc -p ./ && npm run build-webviewapp",
