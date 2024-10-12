@@ -5,7 +5,7 @@
     "description": "UiUi for VS Code",
     "icon": "resources/Logo.png",
     "repository": "https://github.com/werckme/uiui-codext",
-    "version": "1.0.60",
+    "version": "0.0.1",
     "engines": {
         "vscode": "^1.38.0"
     },
