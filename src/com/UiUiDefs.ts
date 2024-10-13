@@ -1,5 +1,5 @@
 export interface IUiUiRootDef extends IUiUiElementDef {
-    comment: string;
+    "line-comment-char": string;
     outfile: string;
     template?: string;
 }

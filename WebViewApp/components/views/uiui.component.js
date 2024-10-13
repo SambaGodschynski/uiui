@@ -39,8 +39,8 @@ export class DebuggerComponent extends BaseComponent {
         }
     }
 
-    onValueChange(id, value) {
-        this.sendMessageToHost("onvalue-changed", {id, value});
+    onValueChange(id, eventData) {
+        this.sendMessageToHost("onvalue-changed", {id, eventData});
     }
  
     render() {

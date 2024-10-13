@@ -14,27 +14,20 @@ export class UiUiSlider extends UiUiBase {
         }
     }
 
-    getInitValue() { 
+    getInitValue() {
         if (this.props.initValue) {
             return this.props.initValue;
         }
-        if (this.props.defaultValue) {
-            return this.props.defaultValue;
+        if (this.defaultValue) {
+            return this.defaultValue;
         }
         return 0;
     }
 
     onSliderValueChange(event) {
         const value = Number.parseFloat(event.target.value);
-        this.onValueChange(value);
-    }
-
-    onValueChange(value) {
         this.setState({ value });
-        if (this.props.onValueChange) {
-            value = this.postProcess(value);
-            this.props.onValueChange(this.id, value);
-        }
+        this.onValueChange(value);
     }
 
     render() {

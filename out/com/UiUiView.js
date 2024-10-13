@@ -92,7 +92,7 @@ class UiUiView extends AWebView_1.AWebView {
             return;
         }
         try {
-            this.renderer.valueChanged(msg.id, msg.value);
+            this.renderer.valueChanged(msg);
         }
         catch (ex) {
             const error = ex;

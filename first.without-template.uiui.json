@@ -1,6 +1,6 @@
 {
     "title": "My First UiUi Panel",
-    "comment": "--",
+    "line-comment-char": "--",
     "outfile": "./first.uiui.rendered",
     "render": "-- this is a render output of uiui\n----------------------------------",
     "children": [

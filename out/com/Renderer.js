@@ -10,16 +10,20 @@ class Renderer {
         this.basePath = basePath;
         this.renderExpessions = [];
         this.values = {};
+        this.unprocessedValues = {};
         this.uiuiRoot = JSON.parse(jsonText);
         this.write = _.debounce(this.writeDebounced.bind(this), WriteDelayMillis);
         this.findRenderExpressions(this.uiuiRoot);
         if (!this.uiuiRoot.outfile) {
             throw new Error(`missing "outfile"`);
         }
-        if (!this.uiuiRoot.comment) {
-            throw new Error(`missing comment attribute`);
+        if (!this.lineCommentChar) {
+            throw new Error(`missing "line-comment-char" attribute`);
         }
         this.readValues();
+    }
+    get lineCommentChar() {
+        return this.uiuiRoot["line-comment-char"];
     }
     get outPath() {
         return path.join(this.basePath, this.uiuiRoot.outfile);
@@ -34,7 +38,7 @@ class Renderer {
         if (!fs_1.existsSync(this.outPath)) {
             return;
         }
-        const re = new RegExp(`\\s*${this.uiuiRoot.comment}\\s*uiui\\s*([A-Za-z0-9+/=]+)\\s*$`, "m");
+        const re = new RegExp(`\\s*${this.lineCommentChar}\\s*uiui\\s*([A-Za-z0-9+/=]+)\\s*$`, "m");
         const text = fs_1.readFileSync(this.outPath).toString();
         if (!text) {
             console.error("no file content");
@@ -64,17 +68,18 @@ class Renderer {
             this.findRenderExpressions(child);
         }
     }
-    valueChanged(id, value) {
-        if (!id) {
+    valueChanged(msg) {
+        if (!msg || !msg.id) {
             return;
         }
-        this.values[id] = value;
+        this.values[msg.id] = msg.eventData.value;
+        this.unprocessedValues[msg.id] = msg.eventData.originalValue || msg.eventData.value;
         this.write();
     }
     valueDump() {
-        const valuesJson = JSON.stringify(this.values);
+        const valuesJson = JSON.stringify(this.unprocessedValues);
         const base64Encoded = Buffer.from(valuesJson).toString('base64');
-        return `${this.uiuiRoot.comment} uiui ${base64Encoded}`;
+        return `${this.lineCommentChar} uiui ${base64Encoded}`;
     }
     writeDebounced() {
         const placeholderMap = {};

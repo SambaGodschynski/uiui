@@ -1,6 +1,6 @@
 {
     "title": "My First UiUi Panel",
-    "comment": "--",
+    "line-comment-char": "--",
     "outfile": "./first.uiui-using-template.rendered",
     "template": "./first.uiui.template",
     "render": "-- My Senf to the situation",
@@ -29,7 +29,8 @@
                         {
                             "id": "value2",
                             "title": "Value 1",
-                            "ctrl": "slider"
+                            "ctrl": "slider",
+                            "defaultValue": 40
                         },
                         {
                             "id": "value3",

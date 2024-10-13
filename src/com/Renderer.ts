@@ -9,10 +9,12 @@ const VariableEscapeChar = '#';
 type RenderExpression = {expr: string, placeholder?: string};
 
 export type RendererValueType = string | number | boolean;
+export type RendererValueChangedEvent = {id: string, eventData: {value: RendererValueType, originalValue?: RendererValueType}};
 export class Renderer {
     private uiuiRoot: IUiUiRootDef;
     private renderExpessions: RenderExpression[] = [];
     public values: { [key: string]: RendererValueType } = {};
+    public unprocessedValues: { [key: string]: RendererValueType } = {};
     private write: () => void;
     constructor(jsonText: string, private basePath: string) {
         this.uiuiRoot = JSON.parse(jsonText);
@@ -21,10 +23,14 @@ export class Renderer {
         if (!this.uiuiRoot.outfile) {
             throw new Error(`missing "outfile"`);
         }
-        if (!this.uiuiRoot.comment) {
-            throw new Error(`missing comment attribute`);
+        if (!this.lineCommentChar) {
+            throw new Error(`missing "line-comment-char" attribute`);
         }
         this.readValues();
+    }
+
+    get lineCommentChar(): string {
+        return this.uiuiRoot["line-comment-char"];
     }
 
     get outPath(): string {
@@ -42,7 +48,7 @@ export class Renderer {
         if (!existsSync(this.outPath)) {
             return;
         }
-        const re = new RegExp(`\\s*${this.uiuiRoot.comment}\\s*uiui\\s*([A-Za-z0-9+/=]+)\\s*$`, "m");
+        const re = new RegExp(`\\s*${this.lineCommentChar}\\s*uiui\\s*([A-Za-z0-9+/=]+)\\s*$`, "m");
         const text = readFileSync(this.outPath).toString();
         if (!text) {
             console.error("no file content");
@@ -73,18 +79,19 @@ export class Renderer {
             this.findRenderExpressions(child);
         }
     }
-    valueChanged(id: string, value: RendererValueType) {
-        if (!id) {
+    valueChanged(msg: RendererValueChangedEvent) {
+        if (!msg || !msg.id) {
             return;
         }
-        this.values[id] = value;
+        this.values[msg.id] = msg.eventData.value;
+        this.unprocessedValues[msg.id] = msg.eventData.originalValue || msg.eventData.value;
         this.write();
     }
 
     valueDump():string {
-        const valuesJson = JSON.stringify(this.values);
+        const valuesJson = JSON.stringify(this.unprocessedValues);
         const base64Encoded = Buffer.from(valuesJson).toString('base64');
-        return `${this.uiuiRoot.comment} uiui ${base64Encoded}`;
+        return `${this.lineCommentChar} uiui ${base64Encoded}`;
     }
 
     writeDebounced() {

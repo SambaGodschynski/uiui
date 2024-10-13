@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { AWebView } from './AWebView';
-import { Renderer } from './Renderer';
+import { Renderer, RendererValueChangedEvent } from './Renderer';
 
 const ViewTitle = "UiUi Inspector";
 
@@ -87,12 +87,12 @@ export class UiUiView extends AWebView {
 		this.onDidDocumentSaveDisposable = vscode.workspace.onDidSaveTextDocument(this.onDocumentSaved.bind(this));
 	}
 
-	onUiValueChanged(msg: {id: string, value: number}) {
+	onUiValueChanged(msg: RendererValueChangedEvent) {
 		if(!this.renderer) {
 			return;
 		}
 		try {
-			this.renderer.valueChanged(msg.id, msg.value);
+			this.renderer.valueChanged(msg);
 		} catch(ex) {
 			const error = ex as any;
 			if (error.message) {

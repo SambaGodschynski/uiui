@@ -8,10 +8,15 @@ export class UiUiBase extends React.Component {
     }
 
     componentDidMount() {
-        this.props.onValueChange(this.id, this.getInitValue());
+        this.onValueChange(this.getInitValue());
     }
 
-    onValueChange(newValue) {}
+    onValueChange(originalValue) {
+        if (this.props.onValueChange) {
+            const value = this.postProcess(originalValue);
+            this.props.onValueChange(this.id, {value, originalValue});
+        }
+    }
 
     getInitValue() { return 0; }
 

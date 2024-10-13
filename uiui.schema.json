@@ -10,7 +10,7 @@
             "type": "string",
             "description": ""
         },
-        "comment": {
+        "line-comment-char": {
             "type": "string",
             "description": "Set the characters for a line comment such as '//' or '#'. UiUi needs comments to save its meta data."
         },
