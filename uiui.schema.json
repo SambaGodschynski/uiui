@@ -40,7 +40,7 @@
     },
     "required": [
         "outfile",
-        "comment"
+        "line-comment-char"
     ],
     "definitions": {
         "childNode": {
