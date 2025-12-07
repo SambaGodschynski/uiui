@@ -15,6 +15,10 @@ function unregisterInspector(inspector: UiUiView) {
 	openedViews.splice(idx, 1);
 }
 
+export function getUiUiView(pathStr: string) : UiUiView|undefined {
+	const view = openedViews.find(x => x.document != null && x.document.fileName === pathStr);
+	return view;
+} 
 
 export class UiUiView extends AWebView {
 	currentPanel: vscode.WebviewPanel|null = null;
@@ -52,6 +56,11 @@ export class UiUiView extends AWebView {
 			return;
 		}
 		//this.currentPanel.webview.postMessage(message);
+	}
+
+	public sourceChanged(): void {
+		console.log("source changed")
+		this.sendSource();
 	}
 
 	sendSource() {

@@ -23,6 +23,11 @@ function unregisterInspector(inspector) {
     const idx = openedViews.indexOf(inspector);
     openedViews.splice(idx, 1);
 }
+function getUiUiView(pathStr) {
+    const view = openedViews.find(x => x.document != null && x.document.fileName === pathStr);
+    return view;
+}
+exports.getUiUiView = getUiUiView;
 class UiUiView extends AWebView_1.AWebView {
     constructor(context) {
         super(context);
@@ -57,6 +62,10 @@ class UiUiView extends AWebView_1.AWebView {
             }
             //this.currentPanel.webview.postMessage(message);
         });
+    }
+    sourceChanged() {
+        console.log("source changed");
+        this.sendSource();
     }
     sendSource() {
         if (!this.document) {
